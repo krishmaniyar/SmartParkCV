@@ -10,20 +10,22 @@ categories = ['empty', 'not_empty']
 # Parking slot ROIs (x, y, w, h)
 parking_slots = [
     # LEFT COLUMN
-    (30, 30, 170, 60),
-    (30, 100, 170, 60),
-    (30, 180, 170, 60),
-    (30, 240, 170, 60),
-    (30, 300, 170, 60),
-    (30, 370, 170, 60),
+    (60, 5, 140, 50),
+    (60, 60, 140, 55),
+    (60, 120, 140, 55),
+    (60, 180, 140, 55),
+    (60, 240, 140, 55),
+    (60, 300, 140, 55),
+    (60, 360, 140, 55),
 
     # RIGHT COLUMN
-    (220, 30, 160, 60),
-    (220, 100, 160, 60),
-    (220, 180, 160, 60),
-    (220, 240, 160, 60),
-    (220, 300, 160, 60),
-    (220, 370, 160, 60),
+    (220, 5, 140, 50),
+    (220, 60, 140, 55),
+    (220, 120, 140, 55),
+    (220, 180, 140, 55),
+    (220, 240, 140, 55),
+    (220, 300, 140, 55),
+    (220, 360, 140, 55),
 ]
 
 
@@ -54,17 +56,40 @@ while cap.isOpened():
         # Predict
         pred = model.predict(roi_flat)[0]
 
-        if pred == 0:  # empty
+        if pred == 0: 
             color = (0, 255, 0)
+            text_color = (0, 0, 0)
             text = 'EMPTY'
         else:
             color = (0, 0, 255)
+            text_color = (255, 255, 255)
             text = 'FULL'
 
-        # Draw box
+        # Draw bounding box
         cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-        cv2.putText(frame, text, (x, y-5),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+        label_height = 20
+
+        # Filled rectangle for text background
+        cv2.rectangle(
+            frame,
+            (x, y),
+            (x + 60, y + label_height),
+            color,
+            -1
+        )
+
+        # Put text inside the filled area
+        cv2.putText(
+            frame,
+            text,
+            (x + 5, y + 15),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            text_color,
+            1,
+            cv2.LINE_AA
+        )
 
     out.write(frame)   
     cv2.imshow('Parking Lot Detection', frame)
